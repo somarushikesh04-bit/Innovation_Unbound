@@ -3,7 +3,6 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![Flask 3.0](https://img.shields.io/badge/framework-Flask%203.0-green.svg)](https://flask.palletsprojects.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
 
@@ -102,7 +101,3 @@ The platform includes an automated test suite covering authentication, ledger op
 python -m pytest tests/
 ```
 
----
-
-## 📄 License
-Released under the [MIT License](LICENSE).
