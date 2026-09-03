@@ -1,12 +1,14 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   MSME360 Design System — Original Light Teal/Navy Theme
+   MSME360 Design System — Light & Dark Mode Theming
    ═══════════════════════════════════════════════════════════════════════════ */
 :root {
-  /* ── Brand Palette ── */
+  /* ── Brand Palette (Light) ── */
   --color-primary: #1e3a5f;
   --color-primary-hover: #162d4a;
+  --color-primary-glow: rgba(30, 58, 95, 0.2);
   --color-secondary: #0d9488;
   --color-secondary-hover: #0f766e;
+  --color-secondary-glow: rgba(13, 148, 136, 0.2);
   --color-accent: #d97706;
   --color-accent-hover: #b45309;
   --color-error: #ba1a1a;
@@ -22,11 +24,11 @@
   --surface-container-high: #e8eaf0;
   --surface-container-highest: #e0e2ea;
 
-  /* ── Glass (light mode) ── */
-  --glass: rgba(255,255,255,0.7);
-  --glass-border: rgba(0,0,0,0.07);
-  --glass-hover: rgba(0,0,0,0.04);
-  --glass-active: rgba(13,148,136,0.08);
+  /* ── Glass Surfaces ── */
+  --glass: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-hover: rgba(0, 0, 0, 0.04);
+  --glass-active: rgba(13, 148, 136, 0.08);
 
   /* ── On-Surface ── */
   --on-surface: #1a1c23;
@@ -34,13 +36,13 @@
   --outline: #9da5b8;
   --outline-variant: #dde1ec;
 
-  /* ── Semantic ── */
+  /* ── Semantic Flags ── */
   --color-flag-high: #ba1a1a;
-  --color-flag-high-bg: rgba(186,26,26,0.06);
+  --color-flag-high-bg: rgba(186, 26, 26, 0.08);
   --color-flag-medium: #d97706;
-  --color-flag-medium-bg: rgba(217,119,6,0.07);
+  --color-flag-medium-bg: rgba(217, 119, 6, 0.08);
   --color-flag-low: #0d9488;
-  --color-flag-low-bg: rgba(13,148,136,0.07);
+  --color-flag-low-bg: rgba(13, 148, 136, 0.08);
 
   /* ── Typography ── */
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
@@ -60,9 +62,7 @@
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
   --shadow-md: 0 4px 16px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
   --shadow-lg: 0 8px 32px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.07);
-  --shadow-glow: 0 0 16px rgba(13,148,136,0.15);
-  --shadow-glow-green: 0 0 14px rgba(13,148,136,0.12);
-  --shadow-glow-amber: 0 0 14px rgba(217,119,6,0.12);
+  --shadow-glow: 0 0 16px rgba(13, 148, 136, 0.15);
 
   /* ── Layout ── */
   --sidebar-width: 260px;
@@ -74,6 +74,52 @@
   --transition-normal: 250ms cubic-bezier(0.4,0,0.2,1);
   --transition-slow: 400ms cubic-bezier(0.4,0,0.2,1);
   --transition-bounce: 350ms cubic-bezier(0.34,1.56,0.64,1);
+}
+
+/* ── Dark Theme Overrides ────────────────────────────────────────────────── */
+[data-theme='dark'] {
+  --color-primary: #6366f1;
+  --color-primary-hover: #4f46e5;
+  --color-primary-glow: rgba(99, 102, 241, 0.3);
+  --color-secondary: #10b981;
+  --color-secondary-hover: #059669;
+  --color-secondary-glow: rgba(16, 185, 129, 0.25);
+  --color-accent: #f59e0b;
+  --color-accent-hover: #d97706;
+  --color-error: #ef4444;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+
+  --surface: #0a0b14;
+  --surface-dim: #06070d;
+  --surface-container-lowest: #121422;
+  --surface-container-low: #17192b;
+  --surface-container: #1d2036;
+  --surface-container-high: #242842;
+  --surface-container-highest: #2b304f;
+
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-hover: rgba(255, 255, 255, 0.08);
+  --glass-active: rgba(99, 102, 241, 0.15);
+
+  --on-surface: #e6e8f2;
+  --on-surface-variant: #9399b5;
+  --outline: #383e5e;
+  --outline-variant: #252a42;
+
+  --color-flag-high: #ef4444;
+  --color-flag-high-bg: rgba(239, 68, 68, 0.12);
+  --color-flag-medium: #f59e0b;
+  --color-flag-medium-bg: rgba(245, 158, 11, 0.12);
+  --color-flag-low: #10b981;
+  --color-flag-low-bg: rgba(16, 185, 129, 0.12);
+
+  --shadow-xs: 0 1px 3px rgba(0,0,0,0.5);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.6);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.7);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.85);
+  --shadow-glow: 0 0 20px var(--color-primary-glow);
 }
 
 /* ── Reset & Base ────────────────────────────────────────────────────────── */
@@ -266,12 +312,12 @@ body {
 .header {
   position: fixed; top: 0; left: var(--sidebar-width); right: 0;
   height: var(--header-height);
-  background: rgba(17,18,30,0.85);
-  backdrop-filter: blur(12px);
+  background: var(--surface-container-lowest);
   border-bottom: 1px solid var(--outline-variant);
   display: flex; align-items: center;
   padding: 0 var(--space-xl);
   z-index: 100; gap: var(--space-md);
+  transition: background var(--transition-normal), border-color var(--transition-normal);
 }
 
 .header-metric {

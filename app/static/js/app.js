@@ -2177,3 +2177,39 @@ function highlightCurrentOwner() {
     b.classList.toggle('active', onclick.includes(email));
   });
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  THEME CONTROLLER — Light & Dark Mode
+// ═══════════════════════════════════════════════════════════════════════════
+
+function initTheme() {
+  const saved = localStorage.getItem('msme360_theme') || 'light';
+  applyTheme(saved);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  toast(`Switched to ${next === 'dark' ? 'Dark' : 'Light'} Mode`, 'info');
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('msme360_theme', theme);
+
+  const iconName = theme === 'dark' ? 'light_mode' : 'dark_mode';
+  const iconTitle = theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+
+  const headerIcon = document.getElementById('theme-toggle-icon');
+  if (headerIcon) headerIcon.textContent = iconName;
+
+  const authIcon = document.getElementById('auth-theme-icon');
+  if (authIcon) authIcon.textContent = iconName;
+
+  const headerBtn = document.getElementById('theme-toggle-btn');
+  if (headerBtn) headerBtn.title = iconTitle;
+}
+
+// Auto-run on script parse
+initTheme();

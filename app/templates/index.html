@@ -15,14 +15,19 @@
 <!-- ═══════════════════ AUTH SCREEN ═══════════════════ -->
 <div id="auth-screen">
   <div class="auth-card">
-    <div class="auth-logo">
-      <div class="auth-logo-icon">
-        <span class="material-symbols-outlined lg filled" style="color:white">account_balance</span>
+    <div class="auth-logo" style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:var(--space-md)">
+        <div class="auth-logo-icon">
+          <span class="material-symbols-outlined lg filled" style="color:white">account_balance</span>
+        </div>
+        <div>
+          <h1>MSME360</h1>
+          <p>AI-Powered Financial Intelligence</p>
+        </div>
       </div>
-      <div>
-        <h1>MSME360</h1>
-        <p>AI-Powered Financial Intelligence</p>
-      </div>
+      <button class="icon-btn" onclick="toggleTheme()" title="Toggle Dark / Light Mode" style="border:1px solid var(--outline-variant)">
+        <span class="material-symbols-outlined" id="auth-theme-icon">dark_mode</span>
+      </button>
     </div>
 
     <div class="auth-tab-group" role="tablist">
@@ -219,6 +224,9 @@
     <div class="header-spacer"></div>
 
     <div class="header-actions">
+      <button class="icon-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark / Light Mode">
+        <span class="material-symbols-outlined" id="theme-toggle-icon">dark_mode</span>
+      </button>
       <button class="icon-btn" onclick="openAdvisor()" title="AI Advisor">
         <span class="material-symbols-outlined">smart_toy</span>
       </button>
