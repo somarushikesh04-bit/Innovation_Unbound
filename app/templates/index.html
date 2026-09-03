@@ -1,0 +1,1583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MSME360 — AI-Powered Business Intelligence Platform</title>
+  <meta name="description" content="MSME360: AI-powered financial intelligence for MSMEs. Predict cash runway, detect invoice fraud, score business locations, and get grounded AI advice."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/css/styles.css"/>
+</head>
+<body>
+
+<!-- ═══════════════════ AUTH SCREEN ═══════════════════ -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">
+        <span class="material-symbols-outlined lg filled" style="color:white">account_balance</span>
+      </div>
+      <div>
+        <h1>MSME360</h1>
+        <p>AI-Powered Financial Intelligence</p>
+      </div>
+    </div>
+
+    <div class="auth-tab-group" role="tablist">
+      <button class="auth-tab active" id="tab-login" role="tab" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" id="tab-register" role="tab" onclick="switchAuthTab('register')">Create Account</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="login-form">
+      <div class="form-group">
+        <label class="form-label" for="login-email">Email Address</label>
+        <input class="form-input" id="login-email" type="email" placeholder="owner@yourbusiness.com" autocomplete="email"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="login-password">Password</label>
+        <input class="form-input" id="login-password" type="password" placeholder="Enter your password" autocomplete="current-password"/>
+      </div>
+      <button class="btn btn-primary w-full" id="login-btn" onclick="doLogin()" style="margin-top:8px">
+        <span class="material-symbols-outlined sm">login</span> Sign In
+      </button>
+      <div style="margin-top:16px;padding:12px;background:var(--surface-container);border-radius:8px;font-size:12px;color:var(--on-surface-variant)">
+        <strong style="color:var(--on-surface)">Demo Accounts (password: Demo@1234)</strong><br/>
+        <span style="cursor:pointer;color:var(--color-secondary)" onclick="fillDemo('owner@apex.com')">▶ Owner: owner@apex.com</span> ·
+        <span style="cursor:pointer;color:var(--color-secondary)" onclick="fillDemo('ca@apex.com')">Accountant: ca@apex.com</span> ·
+        <span style="cursor:pointer;color:var(--color-secondary)" onclick="fillDemo('investor@apex.com')">Investor: investor@apex.com</span>
+      </div>
+      <p id="login-error" class="text-error text-sm hidden" style="margin-top:8px;text-align:center"></p>
+    </div>
+
+    <!-- Register Form -->
+    <div id="register-form" class="hidden">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="reg-fullname">Full Name</label>
+          <input class="form-input" id="reg-fullname" type="text" placeholder="Your name"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="reg-business">Business Name</label>
+          <input class="form-input" id="reg-business" type="text" placeholder="Acme Pvt Ltd"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="reg-email">Email Address</label>
+        <input class="form-input" id="reg-email" type="email" placeholder="you@yourbusiness.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="reg-password">Password (min 8 chars)</label>
+        <input class="form-input" id="reg-password" type="password" placeholder="Create a strong password"/>
+      </div>
+      <button class="btn btn-primary w-full" onclick="doRegister()" style="margin-top:8px">
+        <span class="material-symbols-outlined sm">person_add</span> Create Account
+      </button>
+      <p id="reg-error" class="text-error text-sm hidden" style="margin-top:8px;text-align:center"></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MAIN APP ═══════════════════ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">
+        <span class="material-symbols-outlined sm filled" style="color:white">account_balance</span>
+      </div>
+      <div class="sidebar-logo-text">
+        <h2>MSME360</h2>
+        <p id="tenant-name-sidebar">Business Portal</p>
+      </div>
+    </div>
+
+    <!-- Owner / Role Switcher -->
+    <div class="owner-switcher" id="owner-switcher-panel">
+      <div class="owner-switcher-label">
+        <span class="material-symbols-outlined sm" style="color:var(--color-primary)">swap_horiz</span>
+        Switch Role / Owner
+      </div>
+      <div id="owner-switcher-list">
+        <!-- Populated dynamically by JS -->
+        <button class="owner-btn" onclick="switchOwner('owner@apex.com','Demo@1234','Owner')">
+          <div class="owner-avatar-sm" style="background:linear-gradient(135deg,#6366f1,#818cf8)">RG</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:600;color:var(--on-surface);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Ramesh Gupta</div>
+            <div style="font-size:10px;color:var(--on-surface-variant)">Owner · Apex Mfg</div>
+          </div>
+        </button>
+        <button class="owner-btn" onclick="switchOwner('ca@apex.com','Demo@1234','Accountant')">
+          <div class="owner-avatar-sm" style="background:linear-gradient(135deg,#10b981,#34d399)">PS</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:600;color:var(--on-surface);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Priya Sharma</div>
+            <div style="font-size:10px;color:var(--on-surface-variant)">Accountant · Apex Mfg</div>
+          </div>
+        </button>
+        <button class="owner-btn" onclick="switchOwner('investor@apex.com','Demo@1234','Investor')">
+          <div class="owner-avatar-sm" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">VM</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:600;color:var(--on-surface);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Vinay Mehta</div>
+            <div style="font-size:10px;color:var(--on-surface-variant)">Investor · Apex Mfg</div>
+          </div>
+        </button>
+        <button class="owner-btn" onclick="switchOwner('owner@bloom.com','Demo@1234','Owner')">
+          <div class="owner-avatar-sm" style="background:linear-gradient(135deg,#ec4899,#f472b6)">SP</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:600;color:var(--on-surface);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Sunita Patel</div>
+            <div style="font-size:10px;color:var(--on-surface-variant)">Owner · Bloom Organics</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <span class="nav-section-label">Overview</span>
+      <button class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard')">
+        <span class="material-symbols-outlined filled sm">dashboard</span> Dashboard
+      </button>
+
+      <span class="nav-section-label">Financial Operations</span>
+      <button class="nav-item" id="nav-ledger" onclick="showPage('ledger')">
+        <span class="material-symbols-outlined sm">account_balance_wallet</span> Ledger & Cash
+      </button>
+      <button class="nav-item" id="nav-invoices" onclick="showPage('invoices')">
+        <span class="material-symbols-outlined sm">receipt_long</span> Invoices & OCR
+        <span class="nav-badge hidden" id="invoice-alert-badge">0</span>
+      </button>
+      <button class="nav-item" id="nav-directory" onclick="showPage('directory')">
+        <span class="material-symbols-outlined sm">contacts</span> Directory
+      </button>
+      <button class="nav-item" id="nav-inventory" onclick="showPage('inventory')">
+        <span class="material-symbols-outlined sm">inventory_2</span> Inventory
+      </button>
+
+      <span class="nav-section-label">Analytics & Strategy</span>
+      <button class="nav-item" id="nav-forecasts" onclick="showPage('forecasts')">
+        <span class="material-symbols-outlined sm">trending_up</span> Forecasts
+      </button>
+      <button class="nav-item" id="nav-location" onclick="showPage('location')">
+        <span class="material-symbols-outlined sm">location_city</span> Location Intel
+      </button>
+
+      <span class="nav-section-label">Capital & Ownership</span>
+      <button class="nav-item" id="nav-financing" onclick="showPage('financing')">
+        <span class="material-symbols-outlined sm">request_quote</span> Financing Prep
+      </button>
+      <button class="nav-item" id="nav-captable" onclick="showPage('captable')">
+        <span class="material-symbols-outlined sm">pie_chart</span> Cap Table
+      </button>
+
+      <span class="nav-section-label">Platform</span>
+      <button class="nav-item" id="nav-team" onclick="showPage('team')">
+        <span class="material-symbols-outlined sm">group</span> Team & RBAC
+      </button>
+
+      <span class="nav-section-label">Security</span>
+      <button class="nav-item" id="nav-smartshield" onclick="showPage('smartshield')">
+        <span class="material-symbols-outlined sm filled">shield</span> SmartShield
+        <span class="nav-badge hidden" id="shield-alert-badge" style="background:var(--color-error)">!</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn btn-secondary w-full mb-md" onclick="openAdvisor()">
+        <span class="material-symbols-outlined sm">smart_toy</span> AI Business Advisor
+      </button>
+      <div class="user-pill" onclick="doLogout()">
+        <div class="user-avatar" id="user-avatar-initials">R</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-user-name">Loading...</div>
+          <div class="user-role" id="sidebar-user-role">—</div>
+        </div>
+        <span class="material-symbols-outlined sm" style="color:var(--on-surface-variant)">logout</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-metric">
+      <span class="material-symbols-outlined sm filled" style="color:var(--color-secondary)">favorite</span>
+      <span class="metric-label">HEALTH</span>
+      <span class="metric-value" id="header-health" style="color:var(--color-secondary)">—</span>
+    </div>
+    <div class="header-metric">
+      <span class="material-symbols-outlined sm" style="color:var(--color-accent)">hourglass_empty</span>
+      <span class="metric-label">RUNWAY</span>
+      <span class="metric-value" id="header-runway" style="color:var(--color-accent)">— days</span>
+    </div>
+    <div class="header-metric">
+      <span class="material-symbols-outlined sm" style="color:var(--color-error)">warning</span>
+      <span class="metric-label">ALERTS</span>
+      <span class="metric-value" id="header-alerts" style="color:var(--color-error)">—</span>
+    </div>
+
+    <div class="header-spacer"></div>
+
+    <div class="header-actions">
+      <button class="icon-btn" onclick="openAdvisor()" title="AI Advisor">
+        <span class="material-symbols-outlined">smart_toy</span>
+      </button>
+      <button class="icon-btn" onclick="loadDashboard()" title="Refresh">
+        <span class="material-symbols-outlined">refresh</span>
+      </button>
+      <div style="width:1px;height:24px;background:var(--outline-variant)"></div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="user-avatar" id="header-user-avatar" style="width:28px;height:28px;font-size:12px">R</div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--on-surface)" id="header-user-name">Loading</div>
+          <div style="font-size:10px;color:var(--on-surface-variant)" id="header-user-role">—</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <!-- ══ DASHBOARD PAGE ══ -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h1 class="page-title">Financial Health Overview</h1>
+        <p class="page-subtitle">Real-time metrics, projections, and alerts for Apex Manufacturing & Retail Pvt Ltd</p>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid" id="kpi-grid">
+        <div class="kpi-card teal">
+          <div class="kpi-header">
+            <span class="kpi-label">Operating Cash Flow</span>
+            <span class="material-symbols-outlined sm kpi-icon">trending_up</span>
+          </div>
+          <div class="kpi-value" id="kpi-cash-flow">—</div>
+          <div class="kpi-change up" id="kpi-cash-trend">
+            <span class="material-symbols-outlined sm">arrow_upward</span>Loading...
+          </div>
+        </div>
+        <div class="kpi-card amber">
+          <div class="kpi-header">
+            <span class="kpi-label">Monthly Burn Rate</span>
+            <span class="material-symbols-outlined sm kpi-icon">local_fire_department</span>
+          </div>
+          <div class="kpi-value" id="kpi-burn-rate">—</div>
+          <div class="kpi-change neutral" id="kpi-burn-trend">
+            <span class="material-symbols-outlined sm">arrow_downward</span>Loading...
+          </div>
+        </div>
+        <div class="kpi-card navy">
+          <div class="kpi-header">
+            <span class="kpi-label">Cash Runway</span>
+            <span class="material-symbols-outlined sm kpi-icon">hourglass_bottom</span>
+          </div>
+          <div class="kpi-value" id="kpi-runway">—</div>
+          <div class="kpi-change neutral" id="kpi-runway-label" style="color:var(--on-surface-variant);font-size:12px">days until zero cash</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-header">
+            <span class="kpi-label">Anomaly Alerts</span>
+            <span class="material-symbols-outlined sm kpi-icon">warning</span>
+          </div>
+          <div class="kpi-value" id="kpi-alerts">—</div>
+          <div class="kpi-change neutral" id="kpi-alerts-label" style="color:var(--on-surface-variant);font-size:12px">invoices need review</div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid-2 mb-lg">
+        <!-- Cash Flow Projection -->
+        <div class="card">
+          <div class="card-header">
+            <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">show_chart</span>
+            <div>
+              <div class="card-title">Cash Flow Projection</div>
+              <div class="card-subtitle">ARIMA-based 90-day forecast</div>
+            </div>
+            <div class="card-actions">
+              <div class="chart-tabs">
+                <button class="chart-tab active" onclick="setRunwayHorizon(30, this)">30D</button>
+                <button class="chart-tab" onclick="setRunwayHorizon(60, this)">60D</button>
+                <button class="chart-tab" onclick="setRunwayHorizon(90, this)">90D</button>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" style="height:220px">
+              <canvas id="runway-chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Break-Even Analysis -->
+        <div class="card">
+          <div class="card-header">
+            <span class="material-symbols-outlined sm" style="color:var(--color-accent)">balance</span>
+            <div>
+              <div class="card-title">Break-Even Analysis</div>
+              <div class="card-subtitle">Revenue vs. Total Cost Curve</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" style="height:220px">
+              <canvas id="breakeven-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Health Score + Invoice Queue -->
+      <div class="grid-2">
+        <!-- Health Scorecard -->
+        <div class="card">
+          <div class="card-header">
+            <span class="material-symbols-outlined sm filled" style="color:var(--color-secondary)">favorite</span>
+            <div>
+              <div class="card-title">Financial Health Scorecard</div>
+              <div class="card-subtitle">Composite 0–100 score</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div style="display:flex;align-items:center;gap:32px">
+              <div class="score-ring">
+                <svg width="120" height="120" viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="var(--outline-variant)" stroke-width="10"/>
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="var(--color-secondary)" stroke-width="10"
+                    stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="314" id="health-ring"
+                    style="transition: stroke-dashoffset 1.2s cubic-bezier(0.4,0,0.2,1)"/>
+                </svg>
+                <div class="score-text">
+                  <div class="score-number" id="health-score-num">—</div>
+                  <div class="score-label" id="health-grade">Grade</div>
+                </div>
+              </div>
+              <div style="flex:1">
+                <div class="score-bar-row">
+                  <span class="score-bar-label">Solvency</span>
+                  <div class="score-bar-track"><div class="score-bar-fill" id="bar-solvency" style="width:0%"></div></div>
+                  <span class="score-bar-value" id="val-solvency">0</span>
+                </div>
+                <div class="score-bar-row">
+                  <span class="score-bar-label">Liquidity</span>
+                  <div class="score-bar-track"><div class="score-bar-fill" id="bar-liquidity" style="width:0%"></div></div>
+                  <span class="score-bar-value" id="val-liquidity">0</span>
+                </div>
+                <div class="score-bar-row">
+                  <span class="score-bar-label">Profitability</span>
+                  <div class="score-bar-track"><div class="score-bar-fill" id="bar-profitability" style="width:0%;background:var(--color-accent)"></div></div>
+                  <span class="score-bar-value" id="val-profitability">0</span>
+                </div>
+                <div class="score-bar-row">
+                  <span class="score-bar-label">Efficiency</span>
+                  <div class="score-bar-track"><div class="score-bar-fill" id="bar-efficiency" style="width:0%;background:var(--color-primary)"></div></div>
+                  <span class="score-bar-value" id="val-efficiency">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoice Verification Queue -->
+        <div class="card">
+          <div class="card-header">
+            <span class="material-symbols-outlined sm" style="color:var(--color-error)">warning</span>
+            <div>
+              <div class="card-title">Invoice Verification Queue</div>
+              <div class="card-subtitle">Pending anomaly review</div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-outline btn-sm" onclick="showPage('invoices')">View All</button>
+            </div>
+          </div>
+          <div class="card-body" id="invoice-queue-container" style="padding:0">
+            <div class="empty-state" style="padding:24px">
+              <span class="material-symbols-outlined">check_circle</span>
+              <p>Loading invoice queue...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LEDGER PAGE ══ -->
+    <div class="page" id="page-ledger">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <h1 class="page-title">Ledger & Cash Flow</h1>
+          <p class="page-subtitle">Double-entry bookkeeping with full transaction history</p>
+        </div>
+        <div class="flex gap-sm">
+          <button class="btn btn-outline" onclick="openModal('import-modal')">
+            <span class="material-symbols-outlined sm">upload_file</span> Import CSV
+          </button>
+          <button class="btn btn-primary" onclick="openModal('entry-modal')">
+            <span class="material-symbols-outlined sm">add</span> New Entry
+          </button>
+        </div>
+      </div>
+
+      <!-- Ledger KPIs -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-md);margin-bottom:var(--space-lg)">
+        <div class="kpi-card teal" style="padding:16px">
+          <div class="kpi-label" style="margin-bottom:4px">Total Revenue (90d)</div>
+          <div class="kpi-value" id="ledger-revenue" style="font-size:20px">—</div>
+        </div>
+        <div class="kpi-card amber" style="padding:16px">
+          <div class="kpi-label" style="margin-bottom:4px">Total Expenses (90d)</div>
+          <div class="kpi-value" id="ledger-expenses" style="font-size:20px">—</div>
+        </div>
+        <div class="kpi-card navy" style="padding:16px">
+          <div class="kpi-label" style="margin-bottom:4px">Net Cash Position</div>
+          <div class="kpi-value" id="ledger-net" style="font-size:20px">—</div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="search-bar" style="flex:1;max-width:320px">
+          <span class="material-symbols-outlined sm" style="color:var(--on-surface-variant)">search</span>
+          <input type="text" id="ledger-search" placeholder="Search transactions..." oninput="debounce(loadLedger, 400)()"/>
+        </div>
+        <select class="form-select" id="ledger-cat-filter" style="width:180px" onchange="loadLedger()">
+          <option value="">All Categories</option>
+          <option value="SALES_CASH">Sales (Cash)</option>
+          <option value="SALES_CREDIT">Sales (Credit)</option>
+          <option value="COGS">Cost of Goods Sold</option>
+          <option value="OPEX">Operating Expenses</option>
+          <option value="LIABILITY">Liabilities</option>
+          <option value="RECEIVABLE">Receivables</option>
+        </select>
+        <select class="form-select" id="ledger-type-filter" style="width:130px" onchange="loadLedger()">
+          <option value="">All Types</option>
+          <option value="CREDIT">Credit (In)</option>
+          <option value="DEBIT">Debit (Out)</option>
+        </select>
+        <input type="date" class="form-input" id="ledger-date-from" style="width:155px" onchange="loadLedger()" placeholder="From"/>
+        <input type="date" class="form-input" id="ledger-date-to" style="width:155px" onchange="loadLedger()" placeholder="To"/>
+      </div>
+
+      <div class="card">
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th class="text-right">Amount (₹)</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ledger-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--on-surface-variant)">
+                <div class="spinner" style="margin:0 auto 8px"></div>Loading entries...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="ledger-pagination"></div>
+      </div>
+    </div>
+
+    <!-- ══ INVOICES PAGE ══ -->
+    <div class="page" id="page-invoices">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <h1 class="page-title">Invoices & Document OCR</h1>
+          <p class="page-subtitle">Upload, extract, and verify invoices with AI-powered anomaly detection</p>
+        </div>
+        <div class="flex gap-sm">
+          <select class="form-select" id="inv-status-filter" style="width:160px" onchange="loadInvoices()">
+            <option value="">All Statuses</option>
+            <option value="FLAGGED">🔴 Flagged</option>
+            <option value="PENDING">🟡 Pending</option>
+            <option value="VERIFIED">🟢 Verified</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- OCR Dropzone -->
+      <div class="card mb-lg">
+        <div class="card-header">
+          <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">document_scanner</span>
+          <div class="card-title">Upload Invoice / Receipt</div>
+          <div class="card-subtitle" style="margin-left:4px">PNG, JPEG, PDF · Max 5 MB · OCR + Fraud Detection</div>
+        </div>
+        <div class="card-body">
+          <div class="dropzone" id="ocr-dropzone"
+               ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragleave="handleDragLeave(event)"
+               onclick="document.getElementById('file-input').click()">
+            <span class="material-symbols-outlined xl" style="color:var(--color-secondary);display:block;margin-bottom:8px">cloud_upload</span>
+            <h3>Drop invoice here or click to upload</h3>
+            <p>Tesseract OCR will extract vendor details, GSTIN, amounts, and line items automatically</p>
+            <input type="file" id="file-input" accept=".png,.jpg,.jpeg,.pdf" class="hidden" onchange="uploadInvoice(event)"/>
+          </div>
+          <!-- Manual Override Fields (used when OCR fails or for verification) -->
+          <div style="margin-top:16px;padding:12px 14px;background:var(--surface-container);border-radius:8px">
+            <div style="font-size:11px;font-weight:700;color:var(--on-surface-variant);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px">
+              📝 Manual Override / OCR Correction (Optional)
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Vendor Name</label>
+                <input class="form-input" id="ocr-vendor-name" placeholder="e.g., Rajesh Steel Traders"/></div>
+              <div class="form-group"><label class="form-label">Invoice Number</label>
+                <input class="form-input font-mono" id="ocr-invoice-number" placeholder="INV-2024-001"/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Total Amount (₹)</label>
+                <input class="form-input font-mono" id="ocr-total-amount" type="number" placeholder="25000" min="0" step="0.01"/></div>
+              <div class="form-group"><label class="form-label">Invoice Date</label>
+                <input class="form-input" id="ocr-invoice-date" type="date"/></div>
+            </div>
+          </div>
+          <div id="upload-progress" class="hidden" style="margin-top:12px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;color:var(--on-surface-variant)">
+              <div class="spinner"></div>
+              <span id="upload-status">Uploading and processing...</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="upload-progress-fill" style="width:0%"></div></div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Invoice counts -->
+      <div style="display:flex;gap:var(--space-sm);margin-bottom:var(--space-md)">
+        <div style="flex:1;background:rgba(186,26,26,0.06);border:1px solid rgba(186,26,26,0.2);border-radius:8px;padding:12px 16px;text-align:center">
+          <div style="font-size:24px;font-weight:800;font-family:var(--font-mono);color:var(--color-error)" id="inv-count-flagged">—</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-error)">🔴 Flagged</div>
+        </div>
+        <div style="flex:1;background:rgba(217,119,6,0.06);border:1px solid rgba(217,119,6,0.2);border-radius:8px;padding:12px 16px;text-align:center">
+          <div style="font-size:24px;font-weight:800;font-family:var(--font-mono);color:var(--color-accent)" id="inv-count-pending">—</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-accent)">🟡 Pending</div>
+        </div>
+        <div style="flex:1;background:rgba(13,148,136,0.06);border:1px solid rgba(13,148,136,0.2);border-radius:8px;padding:12px 16px;text-align:center">
+          <div style="font-size:24px;font-weight:800;font-family:var(--font-mono);color:var(--color-secondary)" id="inv-count-verified">—</div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-secondary)">🟢 Verified</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Invoice #</th>
+                <th>Vendor</th>
+                <th>Date</th>
+                <th class="text-right">Amount (₹)</th>
+                <th>Status</th>
+                <th>Anomalies</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="invoices-tbody">
+              <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--on-surface-variant)">
+                <div class="spinner" style="margin:0 auto 8px"></div>Loading invoices...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="invoices-pagination"></div>
+      </div>
+    </div>
+
+    <!-- ══ DIRECTORY PAGE ══ -->
+    <div class="page" id="page-directory">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <h1 class="page-title">Customer & Supplier Directory</h1>
+          <p class="page-subtitle">Manage vendors, track outstanding balances and payment terms</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('contact-modal')">
+          <span class="material-symbols-outlined sm">person_add</span> Add Contact
+        </button>
+      </div>
+      <div class="flex gap-sm mb-md">
+        <button class="btn btn-outline btn-sm active" id="dir-tab-all" onclick="loadDirectory('');setDirTab('all')">All</button>
+        <button class="btn btn-outline btn-sm" id="dir-tab-customer" onclick="loadDirectory('CUSTOMER');setDirTab('customer')">Customers</button>
+        <button class="btn btn-outline btn-sm" id="dir-tab-supplier" onclick="loadDirectory('SUPPLIER');setDirTab('supplier')">Suppliers</button>
+      </div>
+      <div class="card">
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead><tr>
+              <th>Name</th><th>Type</th><th>GSTIN</th>
+              <th class="text-right">Outstanding (₹)</th><th>Payment Terms</th><th>Speed Score</th>
+            </tr></thead>
+            <tbody id="directory-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--on-surface-variant)">
+                <div class="spinner" style="margin:0 auto 8px"></div>Loading...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ INVENTORY PAGE ══ -->
+    <div class="page" id="page-inventory">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <h1 class="page-title">Inventory Management</h1>
+          <p class="page-subtitle">Track SKUs, stock levels, COGS, and low-stock alerts</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('inventory-modal')">
+          <span class="material-symbols-outlined sm">add</span> Add Item
+        </button>
+      </div>
+      <div class="card">
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead><tr>
+              <th>SKU</th><th>Item Name</th><th class="text-right">Stock</th>
+              <th class="text-right">Unit Cost (₹)</th><th class="text-right">Selling Price (₹)</th>
+              <th class="text-right">COGS (₹)</th><th>Status</th>
+            </tr></thead>
+            <tbody id="inventory-tbody">
+              <tr><td colspan="7" style="text-align:center;padding:32px;color:var(--on-surface-variant)">
+                <div class="spinner" style="margin:0 auto 8px"></div>Loading inventory...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FORECASTS PAGE ══ -->
+    <div class="page" id="page-forecasts">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <h1 class="page-title">Financial Forecasting & Analytics</h1>
+          <p class="page-subtitle">ARIMA-based cash runway, break-even analysis, and deterioration signals</p>
+        </div>
+        <div class="flex gap-sm">
+          <button class="btn btn-outline" onclick="clearAllLedger()" title="Delete all ledger entries" style="color:var(--color-error);border-color:var(--color-error)">
+            <span class="material-symbols-outlined sm">delete_sweep</span> Clear All
+          </button>
+          <button class="btn btn-outline" id="btn-seed-demo" onclick="seedDemoData()" title="Load 90 days of realistic Indian MSME data for testing">
+            <span class="material-symbols-outlined sm">science</span> Load Demo Data
+          </button>
+        </div>
+      </div>
+
+
+      <div class="grid-2 mb-lg">
+        <div class="card">
+          <div class="card-header">
+            <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">show_chart</span>
+            <div class="card-title">90-Day Cash Runway Projection</div>
+          </div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px" id="runway-summary">
+              <div style="text-align:center;padding:12px;background:var(--surface-container);border-radius:8px">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.05em;color:var(--on-surface-variant);text-transform:uppercase">30-Day</div>
+                <div class="font-mono" style="font-size:18px;font-weight:700;margin-top:4px" id="horizon-30">—</div>
+              </div>
+              <div style="text-align:center;padding:12px;background:var(--surface-container);border-radius:8px">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.05em;color:var(--on-surface-variant);text-transform:uppercase">60-Day</div>
+                <div class="font-mono" style="font-size:18px;font-weight:700;margin-top:4px" id="horizon-60">—</div>
+              </div>
+              <div style="text-align:center;padding:12px;background:var(--surface-container);border-radius:8px">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.05em;color:var(--on-surface-variant);text-transform:uppercase">90-Day</div>
+                <div class="font-mono" style="font-size:18px;font-weight:700;margin-top:4px" id="horizon-90">—</div>
+              </div>
+            </div>
+            <div class="chart-container" style="height:260px"><canvas id="forecast-runway-chart"></canvas></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="material-symbols-outlined sm" style="color:var(--color-accent)">balance</span>
+            <div class="card-title">Break-Even Analysis</div>
+          </div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+              <div style="padding:12px;background:var(--surface-container);border-radius:8px">
+                <div style="font-size:11px;font-weight:700;color:var(--on-surface-variant);text-transform:uppercase">Break-Even/Month</div>
+                <div class="font-mono" style="font-size:17px;font-weight:700;margin-top:4px;color:var(--color-accent)" id="be-monthly">—</div>
+              </div>
+              <div style="padding:12px;background:var(--surface-container);border-radius:8px">
+                <div style="font-size:11px;font-weight:700;color:var(--on-surface-variant);text-transform:uppercase">Contribution Margin</div>
+                <div class="font-mono" style="font-size:17px;font-weight:700;margin-top:4px;color:var(--color-secondary)" id="be-cmr">—</div>
+              </div>
+              <div style="padding:12px;background:var(--surface-container);border-radius:8px">
+                <div style="font-size:11px;font-weight:700;color:var(--on-surface-variant);text-transform:uppercase">Fixed Costs/Month</div>
+                <div class="font-mono" style="font-size:17px;font-weight:700;margin-top:4px" id="be-fixed">—</div>
+              </div>
+              <div style="padding:12px;background:var(--surface-container);border-radius:8px">
+                <div style="font-size:11px;font-weight:700;color:var(--on-surface-variant);text-transform:uppercase">Net Margin</div>
+                <div class="font-mono" style="font-size:17px;font-weight:700;margin-top:4px;color:var(--color-secondary)" id="be-margin">—</div>
+              </div>
+            </div>
+            <div class="chart-container" style="height:200px"><canvas id="forecast-be-chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Early Warning Signals -->
+      <div class="card">
+        <div class="card-header">
+          <span class="material-symbols-outlined sm filled" style="color:var(--color-error)">notifications_active</span>
+          <div class="card-title">Financial Health Monitoring</div>
+          <div class="card-subtitle" style="margin-left:4px">Automated early-warning signal detection</div>
+        </div>
+        <div class="card-body" id="warning-signals">
+          <div style="color:var(--on-surface-variant);font-size:13px">Loading signals...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ LOCATION PAGE ══ -->
+    <div class="page" id="page-location">
+      <div class="page-header">
+        <h1 class="page-title">Location Intelligence & Expansion</h1>
+        <p class="page-subtitle">Evaluate prospective sites and simulate expansion cost-benefit</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">add_location_alt</span>
+            <div class="card-title">Evaluate New Location</div>
+          </div>
+          <div class="card-body">
+            <div style="margin-bottom:12px;padding:10px 12px;background:var(--surface-container);border-radius:8px">
+              <div style="font-size:11px;font-weight:700;color:var(--on-surface-variant);text-transform:uppercase;margin-bottom:8px">🏙️ Quick Fill — Real Indian City Examples</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn btn-sm btn-outline" onclick="fillLocation('Bandra West, Mumbai', 120000, 1200, 4, 8, 7, 'Premium retail hub, high footfall, strong purchasing power')" style="font-size:11px">Mumbai Bandra</button>
+                <button class="btn btn-sm btn-outline" onclick="fillLocation('FC Road, Pune', 65000, 900, 5, 7, 6, 'College area, young demographic, high footfall on weekends')" style="font-size:11px">Pune FC Road</button>
+                <button class="btn btn-sm btn-outline" onclick="fillLocation('Koramangala, Bangalore', 95000, 1100, 6, 9, 5, 'Tech hub, high disposable income, strong B2B potential')" style="font-size:11px">Bangalore Koramangala</button>
+                <button class="btn btn-sm btn-outline" onclick="fillLocation('Lajpat Nagar, Delhi', 80000, 1500, 7, 6, 4, 'Dense retail market, very high competition, price-sensitive customers')" style="font-size:11px">Delhi Lajpat Nagar</button>
+              </div>
+            </div>
+            <div class="form-group"><label class="form-label">Location Name / Address *</label>
+              <input class="form-input" id="loc-name" placeholder="e.g., Bandra West, Mumbai"/></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Monthly Rent (₹) *</label>
+                <input class="form-input" id="loc-rent" type="number" placeholder="75000"/></div>
+              <div class="form-group"><label class="form-label">Daily Footfall *</label>
+                <input class="form-input" id="loc-footfall" type="number" placeholder="800"/></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Nearby Competitors</label>
+                <input class="form-input" id="loc-competitors" type="number" placeholder="3" value="3"/></div>
+              <div class="form-group"><label class="form-label">Niche Fit (1-10)</label>
+                <input class="form-input" id="loc-niche" type="number" min="1" max="10" placeholder="7" value="7"/></div>
+            </div>
+            <div class="form-group"><label class="form-label">Parking Access (1-10)</label>
+              <input class="form-input" id="loc-parking" type="number" min="1" max="10" placeholder="6" value="6"/></div>
+            <div class="form-group"><label class="form-label">Notes</label>
+              <textarea class="form-textarea" id="loc-notes" rows="2" placeholder="Additional observations about this site..."></textarea></div>
+            <button class="btn btn-primary w-full" onclick="evaluateLocation()">
+              <span class="material-symbols-outlined sm">analytics</span> Calculate Feasibility Score
+            </button>
+            <div id="loc-result" class="hidden" style="margin-top:16px"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="material-symbols-outlined sm" style="color:var(--color-accent)">history</span>
+            <div class="card-title">Evaluated Locations</div>
+          </div>
+          <div class="card-body" style="padding:0">
+            <div id="location-history" style="padding:16px;color:var(--on-surface-variant);font-size:13px">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FINANCING PAGE ══ -->
+    <div class="page" id="page-financing">
+      <div class="page-header">
+        <h1 class="page-title">Financing Preparation & Creditworthiness</h1>
+        <p class="page-subtitle">DSCR analysis, working capital sizing, and investor-ready financial profile</p>
+      </div>
+      <div class="grid-2 mb-lg">
+        <div class="card" id="dscr-card">
+          <div class="card-header">
+            <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">account_balance</span>
+            <div class="card-title">Debt Service Coverage Ratio</div>
+          </div>
+          <div class="card-body">
+            <div style="text-align:center;padding:16px 0">
+              <div class="font-mono" style="font-size:48px;font-weight:800;color:var(--color-secondary)" id="dscr-value">—</div>
+              <div style="font-size:14px;font-weight:600;margin-top:4px" id="dscr-rating">Loading...</div>
+              <div style="font-size:13px;color:var(--on-surface-variant);margin-top:8px;max-width:280px;margin-left:auto;margin-right:auto" id="dscr-desc">—</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+              <div style="padding:10px;background:var(--surface-container);border-radius:8px;text-align:center">
+                <div style="font-size:11px;font-weight:700;color:var(--on-surface-variant);text-transform:uppercase">Working Capital</div>
+                <div class="font-mono" style="font-size:16px;font-weight:700" id="dscr-wc">—</div>
+              </div>
+              <div style="padding:10px;background:var(--surface-container);border-radius:8px;text-align:center">
+                <div style="font-size:11px;font-weight:700;color:var(--on-surface-variant);text-transform:uppercase">Current Ratio</div>
+                <div class="font-mono" style="font-size:16px;font-weight:700" id="dscr-cr">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" style="justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="material-symbols-outlined sm" style="color:var(--color-accent)">summarize</span>
+              <div class="card-title">Investor Financial Profile</div>
+            </div>
+            <button class="btn btn-sm" onclick="exportInvestorReport()" id="btn-export-investor"
+                    title="Download investor-ready Markdown report"
+                    style="display:flex;align-items:center;gap:4px;font-size:12px;padding:5px 10px">
+              <span class="material-symbols-outlined sm" style="font-size:14px">download</span>
+              Export Report
+            </button>
+          </div>
+          <div class="card-body" id="investor-profile-body">
+            <div style="color:var(--on-surface-variant);font-size:13px">Loading profile...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expansion Simulator -->
+      <div class="card">
+        <div class="card-header">
+          <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">calculate</span>
+          <div class="card-title">Working Capital Sizing Tool</div>
+          <div class="card-subtitle" style="margin-left:4px">Simulate loan scenarios</div>
+        </div>
+        <div class="card-body">
+          <div class="form-row-3">
+            <div class="form-group"><label class="form-label">Loan Amount (₹)</label>
+              <input class="form-input font-mono" id="loan-amount" type="number" placeholder="1000000" value="1000000"/></div>
+            <div class="form-group"><label class="form-label">Annual Interest Rate (%)</label>
+              <input class="form-input font-mono" id="loan-rate" type="number" placeholder="12" value="12"/></div>
+            <div class="form-group"><label class="form-label">Tenure (Months)</label>
+              <input class="form-input font-mono" id="loan-tenure" type="number" placeholder="36" value="36"/></div>
+          </div>
+          <button class="btn btn-secondary" onclick="simulateLoan()">
+            <span class="material-symbols-outlined sm">calculate</span> Calculate EMI & Impact
+          </button>
+          <div id="loan-result" class="hidden" style="margin-top:16px;padding:16px;background:var(--surface-container);border-radius:8px"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CAP TABLE PAGE ══ -->
+    <div class="page" id="page-captable">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <h1 class="page-title">Cap Table & Equity Intelligence</h1>
+          <p class="page-subtitle">Ownership ledger, profit distribution, and dilution modeling</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('stakeholder-modal')">
+          <span class="material-symbols-outlined sm">add</span> Add Stakeholder
+        </button>
+      </div>
+
+      <div class="grid-2 mb-lg">
+        <div class="card">
+          <div class="card-header">
+            <span class="material-symbols-outlined sm filled" style="color:var(--color-secondary)">pie_chart</span>
+            <div class="card-title">Current Ownership</div>
+          </div>
+          <div class="card-body">
+            <div class="cap-table-visual">
+              <canvas id="cap-chart" width="160" height="160" style="flex-shrink:0"></canvas>
+              <div class="cap-legend" id="cap-legend">Loading...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="material-symbols-outlined sm" style="color:var(--color-accent)">compress</span>
+            <div class="card-title">Dilution Simulator</div>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">New Investment (₹)</label>
+                <input class="form-input font-mono" id="dil-investment" type="number" placeholder="5000000"/></div>
+              <div class="form-group"><label class="form-label">Pre-Money Valuation (₹)</label>
+                <input class="form-input font-mono" id="dil-valuation" type="number" placeholder="20000000"/></div>
+            </div>
+            <button class="btn btn-secondary" onclick="simulateDilution()">
+              <span class="material-symbols-outlined sm">calculate</span> Simulate Round
+            </button>
+            <div id="dil-result" class="hidden" style="margin-top:16px"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="material-symbols-outlined sm">table_chart</span>
+          <div class="card-title">Cap Table Ledger</div>
+        </div>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead><tr>
+              <th>Stakeholder</th><th>Type</th><th>Round</th>
+              <th class="text-right">Equity %</th><th class="text-right">Shares</th><th class="text-right">Invested (₹)</th>
+            </tr></thead>
+            <tbody id="captable-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:32px;color:var(--on-surface-variant)">
+                <div class="spinner" style="margin:0 auto 8px"></div>Loading...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TEAM PAGE ══ -->
+    <div class="page" id="page-team">
+      <div class="page-header flex justify-between items-center">
+        <div>
+          <h1 class="page-title">Team & Access Control</h1>
+          <p class="page-subtitle">Invite users and manage role-based permissions</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('invite-modal')">
+          <span class="material-symbols-outlined sm">person_add</span> Invite User
+        </button>
+      </div>
+      <div class="card mb-lg">
+        <div class="card-header"><div class="card-title">RBAC Permission Matrix</div></div>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead><tr>
+              <th>Feature</th><th>Viewer</th><th>Staff</th><th>Accountant</th><th>Owner</th>
+            </tr></thead>
+            <tbody>
+              <tr><td>Financial Summaries</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Create Ledger Entries</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Upload Invoices</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Verify Invoices</td><td>❌</td><td>❌</td><td>✅</td><td>✅</td></tr>
+              <tr><td>View Ledger & Audit</td><td>❌</td><td>❌</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Financial Forecasts</td><td>❌</td><td>❌</td><td>✅</td><td>✅</td></tr>
+              <tr><td>AI Business Advisor</td><td>❌</td><td>❌</td><td>✅</td><td>✅</td></tr>
+              <tr><td>Cap Table & Equity</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td></tr>
+              <tr><td>Financing & DSCR</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td></tr>
+              <tr><td>Invite Users</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══ SMARTSHIELD PAGE ══ -->
+    <div class="page" id="page-smartshield">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title" style="display:flex;align-items:center;gap:10px">
+            <span class="material-symbols-outlined filled" style="color:#c0392b;font-size:28px">shield</span>
+            SmartShield — AI Fraud Protection
+          </h1>
+          <p class="page-subtitle">Real-time transaction risk analysis powered by RBI & NPCI fraud intelligence</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <label class="shield-toggle-label" title="Activate large-text mode for senior/vulnerable users">
+            <input type="checkbox" id="vulnerable-mode-toggle" onchange="toggleVulnerableMode()"/>
+            <span class="material-symbols-outlined sm">accessibility_new</span>
+            Vulnerable User Mode
+          </label>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stat-grid" id="shield-stats-row" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(13,148,136,0.1)">
+            <span class="material-symbols-outlined sm" style="color:#0d9488">analytics</span>
+          </div>
+          <div class="stat-value" id="shield-stat-analyzed">—</div>
+          <div class="stat-label">Transactions Analyzed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(186,26,26,0.1)">
+            <span class="material-symbols-outlined sm" style="color:#ba1a1a">block</span>
+          </div>
+          <div class="stat-value" id="shield-stat-blocked" style="color:#ba1a1a">—</div>
+          <div class="stat-label">High-Risk Blocked</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(217,119,6,0.1)">
+            <span class="material-symbols-outlined sm" style="color:#d97706">warning</span>
+          </div>
+          <div class="stat-value" id="shield-stat-medium" style="color:#d97706">—</div>
+          <div class="stat-label">Medium Risk Flagged</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(13,148,136,0.1)">
+            <span class="material-symbols-outlined sm" style="color:#0d9488">savings</span>
+          </div>
+          <div class="stat-value" id="shield-stat-protected" style="color:#0d9488">—</div>
+          <div class="stat-label">Amount Protected</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.2fr 0.8fr;gap:20px;margin-top:20px">
+
+        <!-- LEFT: Transaction Analyzer -->
+        <div>
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header">
+              <span class="material-symbols-outlined sm" style="color:#c0392b">security</span>
+              <span class="card-title">Analyze a Transaction</span>
+            </div>
+            <div class="card-body">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Recipient Name *</label>
+                  <input class="form-input" id="shield-recipient" placeholder="e.g. Ramesh Gupta / SBI KYC Team"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">UPI ID / Account</label>
+                  <input class="form-input" id="shield-upi" placeholder="e.g. name@upi or account number"/>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Amount (₹) *</label>
+                  <input class="form-input" id="shield-amount" type="number" placeholder="e.g. 50000"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Payment Method</label>
+                  <select class="form-select" id="shield-method">
+                    <option value="UPI">UPI</option>
+                    <option value="NEFT">NEFT</option>
+                    <option value="IMPS">IMPS</option>
+                    <option value="RTGS">RTGS</option>
+                    <option value="CARD">Card</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Transaction Remark / Description</label>
+                <input class="form-input" id="shield-desc" placeholder="e.g. KYC update urgent / Monthly rent / Purchase order"/>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Hour (0–23, leave blank for now)</label>
+                  <input class="form-input" id="shield-hour" type="number" min="0" max="23" placeholder="Current hour"/>
+                </div>
+                <div class="form-group" style="display:flex;align-items:flex-end;padding-bottom:4px">
+                  <button class="btn btn-primary w-full" id="shield-analyze-btn" onclick="analyzeShieldTransaction()">
+                    <span class="material-symbols-outlined sm">security_scan</span> Analyze Risk
+                  </button>
+                </div>
+              </div>
+
+              <!-- Quick demo scenarios -->
+              <div style="margin-top:12px;padding:10px;background:var(--surface-container);border-radius:8px">
+                <div style="font-size:11px;font-weight:600;color:var(--on-surface-variant);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Quick Demo Scenarios</div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px">
+                  <button class="chip" onclick="fillShieldDemo('kyc')">🔴 KYC Scam</button>
+                  <button class="chip" onclick="fillShieldDemo('prize')">🔴 Prize Fraud</button>
+                  <button class="chip" onclick="fillShieldDemo('electricity')">🔴 Electricity Scam</button>
+                  <button class="chip" onclick="fillShieldDemo('vendor')">🟡 New Vendor</button>
+                  <button class="chip" onclick="fillShieldDemo('legit')">🟢 Normal Payment</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Risk Result Panel -->
+          <div class="card hidden" id="shield-result-panel">
+            <div class="card-header">
+              <span class="material-symbols-outlined sm" id="shield-result-icon">shield</span>
+              <span class="card-title" id="shield-result-title">Risk Assessment</span>
+            </div>
+            <div class="card-body">
+              <!-- Risk Meter -->
+              <div style="text-align:center;margin-bottom:20px">
+                <div class="shield-meter-container">
+                  <svg viewBox="0 0 200 120" class="shield-meter-svg">
+                    <defs>
+                      <linearGradient id="meterGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#0d9488"/>
+                        <stop offset="50%" style="stop-color:#d97706"/>
+                        <stop offset="100%" style="stop-color:#ba1a1a"/>
+                      </linearGradient>
+                    </defs>
+                    <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#e0e3e5" stroke-width="16" stroke-linecap="round"/>
+                    <path id="meter-arc" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#meterGrad)" stroke-width="16" stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="251.3"/>
+                    <text x="100" y="88" text-anchor="middle" font-size="28" font-weight="800" id="meter-score-text" fill="#191c1e">0</text>
+                    <text x="100" y="108" text-anchor="middle" font-size="11" fill="#45464d" id="meter-level-text">LOW RISK</text>
+                    <text x="22" y="116" font-size="9" fill="#0d9488">Safe</text>
+                    <text x="172" y="116" font-size="9" fill="#ba1a1a" text-anchor="end">Danger</text>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Explanations -->
+              <div id="shield-explanations" style="margin-bottom:16px"></div>
+
+              <!-- Scam keywords -->
+              <div id="shield-scam-kws" class="hidden" style="padding:10px;background:rgba(186,26,26,0.06);border:1px solid rgba(186,26,26,0.2);border-radius:8px;margin-bottom:12px">
+                <div style="font-size:12px;font-weight:600;color:#ba1a1a;margin-bottom:6px">⚠️ Scam-Pattern Keywords Detected</div>
+                <div id="shield-scam-kws-list" style="font-size:12px;color:var(--on-surface-variant)"></div>
+              </div>
+
+              <!-- Action buttons -->
+              <div id="shield-action-buttons" style="display:flex;gap:10px"></div>
+
+              <!-- Trusted contact alert notice -->
+              <div id="shield-contact-alert" class="hidden" style="margin-top:12px;padding:12px;background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.25);border-radius:8px;font-size:13px">
+                <span class="material-symbols-outlined sm" style="color:#d97706;vertical-align:middle">notifications_active</span>
+                <strong style="color:#d97706">Trusted Contact Alerted:</strong>
+                <span id="shield-contact-name"></span> has been notified about this high-risk transaction.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT column -->
+        <div>
+          <!-- Trusted Contact -->
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header">
+              <span class="material-symbols-outlined sm" style="color:#d97706">family_restroom</span>
+              <span class="card-title">Trusted Guardian Contact</span>
+            </div>
+            <div class="card-body">
+              <p style="font-size:13px;color:var(--on-surface-variant);margin-bottom:12px">With your consent, a trusted family member receives an alert when a high-risk transaction is detected.</p>
+              <div class="form-group">
+                <label class="form-label">Guardian Name</label>
+                <input class="form-input" id="tc-name" placeholder="e.g. Anjali (Daughter)"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input class="form-input" id="tc-phone" placeholder="+91 98765 43210"/>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email (optional)</label>
+                <input class="form-input" id="tc-email" type="email" placeholder="guardian@email.com"/>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+                <input type="checkbox" id="tc-consent" checked/>
+                <label for="tc-consent" style="font-size:12px;color:var(--on-surface-variant)">I consent to alert this contact for high-risk transactions</label>
+              </div>
+              <button class="btn btn-secondary w-full" onclick="saveTrustedContact()">
+                <span class="material-symbols-outlined sm">save</span> Save Guardian
+              </button>
+              <div id="tc-status" class="hidden" style="margin-top:8px;font-size:12px;color:#0d9488;text-align:center"></div>
+            </div>
+          </div>
+
+          <!-- Fraud Awareness Chatbot -->
+          <div class="card">
+            <div class="card-header">
+              <span class="material-symbols-outlined sm" style="color:#0d9488">smart_toy</span>
+              <span class="card-title">Fraud Awareness Assistant</span>
+            </div>
+            <div class="card-body" style="padding:0">
+              <div id="shield-chat-messages" style="height:220px;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px">
+                <div class="chat-bubble system">
+                  👋 Hi! I'm your Fraud Protection Assistant. Ask me about suspicious calls, OTP requests, KYC scams, or why a transaction was flagged.
+                </div>
+              </div>
+              <div style="padding:12px;border-top:1px solid var(--outline-variant);display:flex;gap:8px">
+                <input class="form-input" id="shield-chat-input" placeholder="e.g. Someone asked me for OTP..." style="flex:1;margin:0"
+                  onkeydown="if(event.key==='Enter')shieldChatSend()"/>
+                <button class="btn btn-primary" onclick="shieldChatSend()" style="padding:8px 14px">
+                  <span class="material-symbols-outlined sm">send</span>
+                </button>
+              </div>
+              <div style="padding:0 12px 12px;display:flex;flex-wrap:wrap;gap:6px">
+                <button class="chip" onclick="shieldChatQuick('Someone asked for my OTP')">OTP scam?</button>
+                <button class="chip" onclick="shieldChatQuick('Is this payment safe?')">Safe payment?</button>
+                <button class="chip" onclick="shieldChatQuick('I got a message about electricity disconnection')">Electricity scam?</button>
+                <button class="chip" onclick="shieldChatQuick('Why was my transaction flagged?')">Why flagged?</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction History -->
+      <div class="card" style="margin-top:20px">
+        <div class="card-header">
+          <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">history</span>
+          <span class="card-title">Transaction Analysis History</span>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <button class="chip" onclick="loadShieldHistory()">All</button>
+            <button class="chip" onclick="loadShieldHistory('HIGH')">🔴 High</button>
+            <button class="chip" onclick="loadShieldHistory('MEDIUM')">🟡 Medium</button>
+            <button class="chip" onclick="loadShieldHistory('LOW')">🟢 Low</button>
+          </div>
+        </div>
+        <div class="card-body" style="padding:0">
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Recipient</th>
+                  <th>Amount</th>
+                  <th>Method</th>
+                  <th>Risk Score</th>
+                  <th>Risk Level</th>
+                  <th>Status</th>
+                  <th>Time</th>
+                  <th>Key Flags</th>
+                </tr>
+              </thead>
+              <tbody id="shield-history-body">
+                <tr><td colspan="8" style="text-align:center;color:var(--on-surface-variant);padding:24px">Loading history...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scam Pattern Library -->
+      <div style="margin-top:24px">
+        <h2 style="font-size:16px;font-weight:700;margin-bottom:16px;color:var(--on-surface)">
+          <span class="material-symbols-outlined sm" style="vertical-align:middle;color:#ba1a1a">report</span>
+          Known Scam Patterns in India (RBI/MeitY Report 2024)
+        </h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">
+          <div class="scam-card">
+            <div class="scam-card-icon">🏦</div>
+            <div class="scam-card-title">KYC Update Scam</div>
+            <div class="scam-card-desc">Fake bank agents claim your account will be blocked unless you update KYC via a link or phone call. Banks NEVER ask for OTP or passwords.</div>
+            <div class="scam-card-tag">Top scam 2024</div>
+          </div>
+          <div class="scam-card">
+            <div class="scam-card-icon">📞</div>
+            <div class="scam-card-title">OTP Phishing</div>
+            <div class="scam-card-desc">Fraudsters pose as bank support and ask you to share OTP. Real banks will NEVER call and ask for OTP. Sharing OTP = losing money instantly.</div>
+            <div class="scam-card-tag">Most common</div>
+          </div>
+          <div class="scam-card">
+            <div class="scam-card-icon">🎰</div>
+            <div class="scam-card-title">Prize/Lottery Fraud</div>
+            <div class="scam-card-desc">You're told you've won a lottery or prize. To claim it, pay a "processing fee." There are no winnings. The fee goes to the scammer.</div>
+            <div class="scam-card-tag">₹48,200 avg loss</div>
+          </div>
+          <div class="scam-card">
+            <div class="scam-card-icon">⚡</div>
+            <div class="scam-card-title">Electricity Bill Scam</div>
+            <div class="scam-card-desc">WhatsApp/SMS says your electricity will be cut in 2 hours. Pay via UPI to avoid disconnection. Electricity boards never contact via WhatsApp.</div>
+            <div class="scam-card-tag">2nd fastest growing</div>
+          </div>
+          <div class="scam-card">
+            <div class="scam-card-icon">🏛️</div>
+            <div class="scam-card-title">TRAI/CBI Impersonation</div>
+            <div class="scam-card-desc">Caller claims to be from TRAI, CBI, or Narcotics. They threaten legal action unless you pay immediately. Government agencies never demand money over phone.</div>
+            <div class="scam-card-tag">Highest amount lost</div>
+          </div>
+          <div class="scam-card">
+            <div class="scam-card-icon">💼</div>
+            <div class="scam-card-title">Job/WFH Scam</div>
+            <div class="scam-card-desc">Work-from-home job offers requiring a "registration fee" or "training fee" upfront. Legitimate employers never ask you to pay to get a job.</div>
+            <div class="scam-card-tag">Targets youth</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══════════════════ AI ADVISOR DRAWER ═══════════════════ -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeAdvisor()"></div>
+<div class="advisor-drawer" id="advisor-drawer">
+  <div class="drawer-header">
+    <div style="width:32px;height:32px;background:var(--color-primary);border-radius:8px;display:flex;align-items:center;justify-content:center">
+      <span class="material-symbols-outlined sm filled" style="color:white">smart_toy</span>
+    </div>
+    <div class="drawer-title">AI Business Advisor</div>
+    <span style="font-size:11px;background:rgba(13,148,136,0.1);color:var(--color-secondary);padding:3px 8px;border-radius:999px;font-weight:700">GEMINI</span>
+    <button class="btn-ghost" onclick="closeAdvisor()"><span class="material-symbols-outlined">close</span></button>
+  </div>
+
+  <div class="chat-messages" id="chat-messages">
+    <div class="chat-bubble ai">
+      👋 Hello! I'm your AI Business Advisor, grounded in your real financial data.
+      <br/><br/>Ask me anything about your finances — hiring, expansion, loans, suppliers, or cash flow strategies.
+    </div>
+  </div>
+
+  <div class="quick-prompts" id="quick-prompts">
+    <!-- Populated by JS -->
+  </div>
+
+  <div class="chat-input-row">
+    <input class="chat-input" id="chat-input" placeholder="Ask about your finances..."
+           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"/>
+    <button class="btn btn-primary" onclick="sendMessage()" style="border-radius:999px;padding:8px 14px">
+      <span class="material-symbols-outlined sm">send</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODALS ═══════════════════ -->
+
+<!-- New Ledger Entry Modal -->
+<div class="modal-overlay" id="entry-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">add_circle</span>
+      <div class="modal-title">New Ledger Entry</div>
+      <button class="btn-ghost" onclick="closeModal('entry-modal')"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Entry Type *</label>
+          <select class="form-select" id="entry-type">
+            <option value="CREDIT">Credit (Income / Inflow)</option>
+            <option value="DEBIT">Debit (Expense / Outflow)</option>
+          </select></div>
+        <div class="form-group"><label class="form-label">Category *</label>
+          <select class="form-select" id="entry-category">
+            <option value="SALES_CASH">Sales (Cash)</option>
+            <option value="SALES_CREDIT">Sales (Credit)</option>
+            <option value="COGS">Cost of Goods Sold</option>
+            <option value="OPEX">Operating Expense</option>
+            <option value="LIABILITY">Liability / Loan</option>
+            <option value="RECEIVABLE">Receivable</option>
+            <option value="INVENTORY">Inventory</option>
+            <option value="OTHER">Other</option>
+          </select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Amount (₹) *</label>
+          <input class="form-input font-mono" id="entry-amount" type="number" placeholder="0.00" min="0" step="0.01"/></div>
+        <div class="form-group"><label class="form-label">Date *</label>
+          <input class="form-input" id="entry-date" type="date"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label>
+        <input class="form-input" id="entry-desc" type="text" placeholder="Brief description of this transaction"/></div>
+      <div class="form-group"><label class="form-label">Party Name (Customer / Vendor)</label>
+        <input class="form-input" id="entry-party" type="text" placeholder="e.g., Metro Distributors"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('entry-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="createEntry()">
+        <span class="material-symbols-outlined sm">save</span> Save Entry
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Import CSV Modal -->
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">upload_file</span>
+      <div class="modal-title">Import Ledger from CSV</div>
+      <button class="btn-ghost" onclick="closeModal('import-modal')"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal-body">
+      <div style="padding:12px;background:var(--surface-container);border-radius:8px;font-size:13px;margin-bottom:16px;color:var(--on-surface-variant)">
+        <strong style="color:var(--on-surface)">Expected columns:</strong><br/>
+        date, description, category, type (DEBIT/CREDIT), amount, party
+      </div>
+      <input type="file" id="csv-file-input" accept=".csv" class="form-input"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('import-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="importCSV()">
+        <span class="material-symbols-outlined sm">upload</span> Import
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Modal -->
+<div class="modal-overlay" id="contact-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">person_add</span>
+      <div class="modal-title">Add Customer / Supplier</div>
+      <button class="btn-ghost" onclick="closeModal('contact-modal')"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Entity Type *</label>
+          <select class="form-select" id="contact-type">
+            <option value="CUSTOMER">Customer</option>
+            <option value="SUPPLIER">Supplier</option>
+          </select></div>
+        <div class="form-group"><label class="form-label">Name *</label>
+          <input class="form-input" id="contact-name" placeholder="Company / Individual Name"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">GSTIN</label>
+          <input class="form-input font-mono" id="contact-gstin" placeholder="27AABCI1234D1Z5"/></div>
+        <div class="form-group"><label class="form-label">Payment Terms (days)</label>
+          <input class="form-input" id="contact-terms" type="number" value="30"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Outstanding Balance (₹)</label>
+          <input class="form-input font-mono" id="contact-balance" type="number" value="0"/></div>
+        <div class="form-group"><label class="form-label">Phone</label>
+          <input class="form-input" id="contact-phone" type="tel" placeholder="+91 99999 99999"/></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('contact-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="createContact()">Save Contact</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inventory Item Modal -->
+<div class="modal-overlay" id="inventory-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">inventory_2</span>
+      <div class="modal-title">Add Inventory Item</div>
+      <button class="btn-ghost" onclick="closeModal('inventory-modal')"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">SKU</label>
+          <input class="form-input font-mono" id="inv-sku" placeholder="SKU-001"/></div>
+        <div class="form-group"><label class="form-label">Item Name *</label>
+          <input class="form-input" id="inv-name" placeholder="Steel Rods 6mm"/></div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group"><label class="form-label">Stock (units)</label>
+          <input class="form-input font-mono" id="inv-stock" type="number" value="0"/></div>
+        <div class="form-group"><label class="form-label">Unit Cost (₹)</label>
+          <input class="form-input font-mono" id="inv-cost" type="number" value="0"/></div>
+        <div class="form-group"><label class="form-label">Selling Price (₹)</label>
+          <input class="form-input font-mono" id="inv-price" type="number" value="0"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Reorder Threshold</label>
+          <input class="form-input font-mono" id="inv-threshold" type="number" value="10"/></div>
+        <div class="form-group"><label class="form-label">Turnover (days)</label>
+          <input class="form-input font-mono" id="inv-turnover" type="number" value="30"/></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('inventory-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="createInventoryItem()">Save Item</button>
+    </div>
+  </div>
+</div>
+
+<!-- Stakeholder Modal -->
+<div class="modal-overlay" id="stakeholder-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">person_add</span>
+      <div class="modal-title">Add Stakeholder to Cap Table</div>
+      <button class="btn-ghost" onclick="closeModal('stakeholder-modal')"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Stakeholder Name *</label>
+          <input class="form-input" id="sh-name" placeholder="Investor / Founder name"/></div>
+        <div class="form-group"><label class="form-label">Type *</label>
+          <select class="form-select" id="sh-type">
+            <option value="FOUNDER">Founder</option>
+            <option value="INVESTOR">Investor</option>
+            <option value="POOL">ESOP Pool</option>
+          </select></div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group"><label class="form-label">Equity % *</label>
+          <input class="form-input font-mono" id="sh-equity" type="number" placeholder="10.0" step="0.1"/></div>
+        <div class="form-group"><label class="form-label">Shares</label>
+          <input class="form-input font-mono" id="sh-shares" type="number" value="0"/></div>
+        <div class="form-group"><label class="form-label">Investment (₹)</label>
+          <input class="form-input font-mono" id="sh-invested" type="number" value="0"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Round Name</label>
+        <input class="form-input" id="sh-round" placeholder="Seed / Series A / Incorporation" value="Seed"/></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('stakeholder-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="addStakeholder()">Add to Cap Table</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invite User Modal -->
+<div class="modal-overlay" id="invite-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">person_add</span>
+      <div class="modal-title">Invite Team Member</div>
+      <button class="btn-ghost" onclick="closeModal('invite-modal')"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Full Name *</label>
+        <input class="form-input" id="invite-name" placeholder="John Doe"/></div>
+      <div class="form-group"><label class="form-label">Email Address *</label>
+        <input class="form-input" id="invite-email" type="email" placeholder="john@yourcompany.com"/></div>
+      <div class="form-group"><label class="form-label">Role *</label>
+        <select class="form-select" id="invite-role">
+          <option value="VIEWER">Viewer / Investor (Read-only summaries)</option>
+          <option value="STAFF">Staff / Data Operator (Enter transactions)</option>
+          <option value="ACCOUNTANT">Accountant (Full ledger & invoice access)</option>
+          <option value="OWNER">Admin / Co-owner (Full access)</option>
+        </select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('invite-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="inviteUser()">Send Invite</button>
+    </div>
+  </div>
+</div>
+
+<!-- Invoice Detail Modal -->
+<div class="modal-overlay" id="invoice-detail-modal">
+  <div class="modal" style="max-width:640px">
+    <div class="modal-header">
+      <span class="material-symbols-outlined sm" style="color:var(--color-secondary)">receipt_long</span>
+      <div class="modal-title" id="inv-detail-title">Invoice Details</div>
+      <button class="btn-ghost" onclick="closeModal('invoice-detail-modal')"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal-body" id="inv-detail-body">Loading...</div>
+    <div class="modal-footer" id="inv-detail-footer"></div>
+  </div>
+</div>
+
+
+<!-- SmartShield HIGH-RISK Alert Modal -->
+<div class="modal-overlay" id="shield-highrisk-modal" style="z-index:2000">
+  <div class="modal shield-alert-modal">
+    <div class="shield-alert-header">
+      <div class="shield-alert-icon-ring">
+        <span class="material-symbols-outlined filled" style="font-size:40px;color:white">warning</span>
+      </div>
+      <div class="shield-alert-headline" id="shield-modal-headline">⛔ HIGH-RISK TRANSACTION DETECTED</div>
+      <div class="shield-alert-score-badge" id="shield-modal-score">Score: 88/100</div>
+    </div>
+    <div class="modal-body" style="padding:20px 24px">
+      <div class="shield-alert-message" id="shield-modal-message">
+        This payment has been held for your protection.
+      </div>
+      <div id="shield-modal-explanations" style="margin:16px 0"></div>
+      <div id="shield-modal-contact-notice" class="hidden" style="padding:12px;background:rgba(217,119,6,0.1);border-radius:8px;margin-bottom:12px;font-size:13px">
+        <span class="material-symbols-outlined sm" style="color:#d97706;vertical-align:middle">notifications_active</span>
+        Your trusted guardian has been notified.
+      </div>
+      <div class="shield-alert-cta">
+        <button class="btn shield-btn-cancel" id="shield-modal-cancel-btn">
+          <span class="material-symbols-outlined sm">cancel</span> Cancel — It's a Scam!
+        </button>
+        <button class="btn shield-btn-confirm" id="shield-modal-confirm-btn">
+          <span class="material-symbols-outlined sm">check_circle</span> I've Verified — Proceed
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
