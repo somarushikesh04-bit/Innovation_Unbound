@@ -172,7 +172,8 @@ def invite_user():
     if User.query.filter_by(email=email).first():
         return jsonify({"error": "User with this email already exists"}), 409
 
-    temp_password = "Msme360@Change!"
+    import secrets
+    temp_password = f"Msme360!{secrets.token_urlsafe(9)}"
     new_user = User(
         org_id=current.org_id,
         email=email,
